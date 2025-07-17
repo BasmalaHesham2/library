@@ -20,12 +20,12 @@ class Admin():
         self.listbook.append(book)
     def allbooks(self):
         for x in self.listbook:
-            print(x.name)
+            if x.quantity>0:
+                print(x.name)
     def search(self,bookname):
         found=False
-        found=False
         for x in self.listbook:
-            if bookname==x.name :
+            if bookname==x.name and x.quantity>0:
                 found=True
                 print(f"found the book : {bookname}")
                 break
@@ -51,7 +51,7 @@ class Admin():
             for x in self.listbook:
                 if(bookid==x.id):
                     if(x.quantity>0):
-                        found=True
+                        foundbook=True
                         x.quantity=x.quantity-1
                         self.borrowedbooks.append(x)
                         print("you have borrowed your book succseffuly")
@@ -61,26 +61,59 @@ class Admin():
         else : print("invalid user id pls try again")
 
     def returnbook(self,userid,bookid):
-        founduser=False
-        foundbook=False
-        for x in self.borrowinguser:
-            if userid==x.id:
-                founduser=True
-        if founduser:
-            for x in self.borrowedbooks:
-                if bookid==x.id:
-                    foundbook=True
-                    x.quantity+=1
-                    self.borrowedbooks.remove(x)
-                    self.borrowinguser.remove(borrowinguser)
-                    break
-            if foundbook==False : print("Book id isn't avalible pls try again")
-        else : print("invalid user id pls try again")
+        found = False
+        for i in range(len(self.borrowinguser)):
+            if userid==self.borrowinguser[i].id and bookid==self.borrowedbooks[i].id:
+                found=True
+                self.borrowedbooks[i].quantity+=1
+                self.borrowinguser.pop(i)
+                self.borrowedbooks.pop(i)
+                print("Book returned succssefully")
+                break
+        if(found==False): print("invalid user or book id")
+                
+
 
 
    
-choice = 0
-print("=================Welcome to the my library pls enter a the number of your request==========================")
-print("1-Add Book\n2-Add User")
 
-   
+print("=================   Welcome to the my library please enter the number of your request   ==========================")
+choice=0
+admin=Admin()
+while(choice!=8):
+    
+    print("\n1-Add Book\n2-Add User/n3-print all avalible users\n4-Borrow a book\n5-return a borrowed book\n6-print all books\n7-Search for a book\n8-EXIT")
+    choice=int(input())
+    match choice:
+        case 1:
+            name=input("please enter the book name \n")
+            id=int(input("please enter the book id\n"))
+            q=int(input("please enter the book quantity\n"))
+            book=Book(id,name,q)
+            admin.addbook(book)
+            print("Book added")
+        case 2:
+            name=input("please enter the user name\n")
+            id=int(input("please enter the user id\n"))
+            user=User(id,name)
+            admin.adduser(user)
+            print("user added")
+        case 3:
+            admin.allusers()
+        case 4:
+            bookid=int(input("please enter the id of the book\n"))
+            userid=int(input("please enter your id\n"))
+            admin.borrowing(bookid,userid)
+        case 5:
+            bookid=int(input("please enter thr book id\n"))
+            userid=int(input("please enter your id\n"))
+            admin.returnbook(userid,bookid)
+        case 6:
+            admin.allbooks()
+        case 7:
+            bookname=input()
+            admin.search(bookname)
+        case _:
+            print("invalid input please try again")
+
+else : print("Thank you for using my system <3")
